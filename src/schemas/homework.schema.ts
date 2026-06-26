@@ -1,0 +1,71 @@
+import { z } from "zod";
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const ALLOWED_FILE_TYPES = ["application/zip", "application/x-rar-compressed", "application/x-7z-compressed"];
+const ALLOWED_EXTENSIONS = [".zip", ".rar", ".7z"];
+
+export const homeworkUploadSchema = z.object({
+	fullName: z
+		.string()
+		.min(1, "Full name is required")
+		.min(3, "Full name must be at least 3 characters")
+		.max(100, "Full name must be at most 100 characters")
+		.transform((val) => val.trim()),
+	group: z
+		.string()
+		.min(1, "Group is required")
+		.min(2, "Group must be at least 2 characters")
+		.max(30, "Group must be at most 30 characters")
+		.transform((val) => val.trim()),
+	file: z
+		.instanceof(File)
+		.refine((file) => file.size > 0, "File is required")
+		.refine(
+			(file) => file.size <= MAX_FILE_SIZE,
+			`File size must be at most 50MB`
+		)
+		.refine(
+			(file) => {
+				const extension = "." + file.name.split(".").pop()?.toLowerCase();
+				return ALLOWED_EXTENSIONS.includes(extension);
+			},
+			"Only .zip, .rar, and .7z files are allowed"
+		),
+});
+
+export type HomeworkUploadFormData = z.infer<typeof homeworkUploadSchema>;
+
+export const serverHomeworkUploadSchema = z.object({
+	fullName: z
+		.string()
+		.min(1, "Full name is required")
+		.min(3, "Full name must be at least 3 characters")
+		.max(100, "Full name must be at most 100 characters")
+		.trim(),
+	group: z
+		.string()
+		.min(1, "Group is required")
+		.min(2, "Group must be at least 2 characters")
+		.max(30, "Group must be at most 30 characters")
+		.trim(),
+	file: z
+		.instanceof(File)
+		.refine((file) => file.size > 0, "File is required")
+		.refine(
+			(file) => file.size <= MAX_FILE_SIZE,
+			`File size must be at most 50MB`
+		)
+		.refine(
+			(file) => {
+				const extension = "." + file.name.split(".").pop()?.toLowerCase();
+				return ALLOWED_EXTENSIONS.includes(extension);
+			},
+			"Only .zip, .rar, and .7z files are allowed"
+		)
+		.refine(
+			(file) => ALLOWED_FILE_TYPES.includes(file.type) || ALLOWED_EXTENSIONS.includes("." + file.name.split(".").pop()?.toLowerCase()),
+			"Invalid file type"
+		),
+});
+
+export type ServerHomeworkUploadData = z.infer<typeof serverHomeworkUploadSchema>;
