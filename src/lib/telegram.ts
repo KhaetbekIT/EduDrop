@@ -128,17 +128,17 @@ export async function sendHomeworkNotification(
 	fileName: string,
 	fileSize: number
 ): Promise<void> {
-	const message = `📚 <b>Homework Submission</b>
+	const message = `📚 <b>Проверка ДЗ</b>
 
-👤 <b>Full Name:</b> ${escapeHtml(fullName)}
+👤 <b>ФИО:</b> ${escapeHtml(fullName)}
 
-🎓 <b>Group:</b> ${escapeHtml(group)}
+🎓 <b>Группа:</b> ${escapeHtml(group)}
 
-📄 <b>File:</b> ${escapeHtml(fileName)}
+📄 <b>Файл:</b> ${escapeHtml(fileName)}
 
-💾 <b>Size:</b> ${formatFileSize(fileSize)}
+💾 <b>Размер:</b> ${formatFileSize(fileSize)}
 
-⏰ <b>Submitted:</b> ${new Date().toLocaleString("ru-RU")}`;
+⏰ <b>Отправлено:</b> ${new Date().toLocaleString("ru-RU")}`;
 
 	await sendTelegramMessage(message);
 }

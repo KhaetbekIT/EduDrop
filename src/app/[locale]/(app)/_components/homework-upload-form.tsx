@@ -244,7 +244,7 @@ export const HomeworkUploadForm = () => {
 							className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition cursor-pointer ${dragActive
 								? "border-blue-500 bg-blue-50"
 								: "border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100"
-								}`}
+							}`}
 						>
 							<input
 								id="file"

@@ -13,13 +13,13 @@
     "file": "Arxiv fayli",
     "fileAriaLabel": "Arxiv yuklash",
     "dragDrop": "Fayl shu yerga olib keling",
-    "supportedFormats": "Qo'llaniladigan formatlar: .zip, .rar, .7z (maksimal 100 MB)",
+    "supportedFormats": "Qo'llaniladigan formatlar: .zip, .rar, .7z (maksimal 50 MB)",
     "selectFile": "Faylni tanlash",
     "replaceFile": "Faylni almashtirish",
     "removeFile": "Faylni o'chirish",
     "submit": "Ishni yuborish",
     "uploading": "Yuklanmoqda...",
-    "maxFileSize": "Maksimal fayl hajmi: 100 MB",
+    "maxFileSize": "Maksimal fayl hajmi: 50 MB",
     "success": "Muvaffaqiyatli yuborildi!",
     "errorTitle": "Yuklash xatosi"
   }
