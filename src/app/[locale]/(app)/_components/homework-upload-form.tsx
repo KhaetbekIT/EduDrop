@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, type DragEvent, type ChangeEvent } from "react";
+import { useState, useCallback, useRef, type DragEvent, type ChangeEvent, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -9,9 +9,9 @@ import { formatFileSize } from "$/utils/file";
 import type { HomeworkUploadResponse } from "$/types/homework.types";
 import { LanguageSwitcher } from "./language-switcher";
 
-export function HomeworkUploadForm() {
+export const HomeworkUploadForm = () => {
 	const t = useTranslations("HomeworkUpload");
-	const [isUploading, setIsUploading] = useState(false);
+	const [pending, startTransition] = useTransition()
 	const [uploadSuccess, setUploadSuccess] = useState(false);
 	const [successMessage, setSuccessMessage] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
@@ -116,48 +116,46 @@ export function HomeworkUploadForm() {
 		fileInputRef.current?.click();
 	};
 
-	const onSubmit = async (data: HomeworkUploadFormData) => {
-		try {
-			setIsUploading(true);
-			setErrorMessage("");
-			setSuccessMessage("");
-
-			const formData = new FormData();
-			formData.append("fullName", data.fullName);
-			formData.append("group", data.group);
-			formData.append("file", data.file, data.file.name);
-
-			const response = await fetch("/api/homework/upload", {
-				method: "POST",
-				body: formData,
-			});
-
-			const result = (await response.json()) as HomeworkUploadResponse;
-
-			if (!response.ok || !result.success) {
-				setErrorMessage(result.error?.details || result.message || "Failed to upload homework");
-				setIsUploading(false);
-				return;
-			}
-
-			setUploadSuccess(true);
-			setSuccessMessage(result.message);
-			reset();
-			if (fileInputRef.current) {
-				fileInputRef.current.value = "";
-			}
-
-			// Auto-hide success message and reset form after 5 seconds
-			setTimeout(() => {
-				setUploadSuccess(false);
+	const onSubmit = (data: HomeworkUploadFormData) => {
+		startTransition(async () => {
+			try {
+				setErrorMessage("");
 				setSuccessMessage("");
-			}, 5000);
-		} catch (error) {
-			const errorMsg = error instanceof Error ? error.message : "An error occurred";
-			setErrorMessage(errorMsg);
-		} finally {
-			setIsUploading(false);
-		}
+
+				const formData = new FormData();
+				formData.append("fullName", data.fullName);
+				formData.append("group", data.group);
+				formData.append("file", data.file, data.file.name);
+
+				const response = await fetch("/api/homework/upload", {
+					method: "POST",
+					body: formData,
+				});
+
+				const result = (await response.json()) as HomeworkUploadResponse;
+
+				if (!response.ok || !result.success) {
+					setErrorMessage(result.error?.details || result.message || "Failed to upload homework");
+					return;
+				}
+
+				setUploadSuccess(true);
+				setSuccessMessage(result.message);
+				reset();
+				if (fileInputRef.current) {
+					fileInputRef.current.value = "";
+				}
+
+				// Auto-hide success message and reset form after 5 seconds
+				setTimeout(() => {
+					setUploadSuccess(false);
+					setSuccessMessage("");
+				}, 5000);
+			} catch (error) {
+				const errorMsg = error instanceof Error ? error.message : "An error occurred";
+				setErrorMessage(errorMsg);
+			}
+		})
 	};
 
 	return (
@@ -246,7 +244,7 @@ export function HomeworkUploadForm() {
 							className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition cursor-pointer ${dragActive
 								? "border-blue-500 bg-blue-50"
 								: "border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100"
-							}`}
+								}`}
 						>
 							<input
 								id="file"
@@ -279,7 +277,7 @@ export function HomeworkUploadForm() {
 										<p className="text-slate-500 text-sm">{t("supportedFormats")}</p>
 									</div>
 
-									<button
+									{/* <button
 										type="button"
 										onClick={(event) => {
 											event.stopPropagation();
@@ -288,7 +286,7 @@ export function HomeworkUploadForm() {
 										className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium text-sm"
 									>
 										{t("selectFile")}
-									</button>
+									</button> */}
 								</>
 							) : (
 								<div className="border-2 border-emerald-300 rounded-2xl bg-emerald-50 p-4">
@@ -347,10 +345,10 @@ export function HomeworkUploadForm() {
 					{/* Submit Button */}
 					<button
 						type="submit"
-						disabled={isUploading || !isDirty}
+						disabled={pending || !isDirty}
 						className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-3 px-4 rounded-xl hover:shadow-lg hover:from-blue-600 hover:to-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center gap-2"
 					>
-						{isUploading && (
+						{pending && (
 							<svg
 								className="h-5 w-5 animate-spin"
 								xmlns="http://www.w3.org/2000/svg"
@@ -372,7 +370,7 @@ export function HomeworkUploadForm() {
 								/>
 							</svg>
 						)}
-						{isUploading ? t("uploading") : t("submit")}
+						{pending ? t("uploading") : t("submit")}
 					</button>
 
 					<p className="text-xs text-slate-500 text-center mt-4">{t("maxFileSize")}</p>

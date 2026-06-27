@@ -1,28 +1,28 @@
 import { z } from "zod";
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
 const ALLOWED_FILE_TYPES = ["application/zip", "application/x-rar-compressed", "application/x-7z-compressed"];
 const ALLOWED_EXTENSIONS = [".zip", ".rar", ".7z"];
 
 export const homeworkUploadSchema = z.object({
 	fullName: z
 		.string()
+		.trim()
 		.min(1, "Full name is required")
 		.min(3, "Full name must be at least 3 characters")
-		.max(100, "Full name must be at most 100 characters")
-		.transform((val) => val.trim()),
+		.max(100, "Full name must be at most 100 characters"),
 	group: z
 		.string()
+		.trim()
 		.min(1, "Group is required")
 		.min(2, "Group must be at least 2 characters")
-		.max(30, "Group must be at most 30 characters")
-		.transform((val) => val.trim()),
+		.max(30, "Group must be at most 30 characters"),
 	file: z
 		.instanceof(File)
 		.refine((file) => file.size > 0, "File is required")
 		.refine(
 			(file) => file.size <= MAX_FILE_SIZE,
-			`File size must be at most 50MB`
+			`File size must be at most 100MB`
 		)
 		.refine(
 			(file) => {
@@ -53,7 +53,7 @@ export const serverHomeworkUploadSchema = z.object({
 		.refine((file) => file.size > 0, "File is required")
 		.refine(
 			(file) => file.size <= MAX_FILE_SIZE,
-			`File size must be at most 50MB`
+			`File size must be at most 100MB`
 		)
 		.refine(
 			(file) => {
