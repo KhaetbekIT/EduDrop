@@ -1,4 +1,4 @@
-const TELEGRAM_API_URL = "https://api.telegram.org";
+const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;
 
 interface TelegramApiResponse {
 	ok: boolean;
@@ -124,21 +124,27 @@ export async function sendTelegramDocument(
 
 export async function sendHomeworkNotification(
 	fullName: string,
+	homework: string,
 	group: string,
+	projectLink: string | undefined,
 	fileName: string,
 	fileSize: number
 ): Promise<void> {
-	const message = `📚 <b>Проверка ДЗ</b>
+	const message = `📚 <b>Homework Submission</b>
 
-👤 <b>ФИО:</b> ${escapeHtml(fullName)}
+👤 <b>Student:</b> ${escapeHtml(fullName)}
 
-🎓 <b>Группа:</b> ${escapeHtml(group)}
+📚 <b>Homework:</b> ${escapeHtml(homework)}
 
-📄 <b>Файл:</b> ${escapeHtml(fileName)}
+👥 <b>Group:</b> ${escapeHtml(group)}
 
-💾 <b>Размер:</b> ${formatFileSize(fileSize)}
+🔗 <b>Repository:</b> ${escapeHtml(projectLink || "Not specified")}
 
-⏰ <b>Отправлено:</b> ${new Date().toLocaleString("ru-RU")}`;
+📦 <b>Archive:</b> ${escapeHtml(fileName)}
+
+💾 <b>Size:</b> ${formatFileSize(fileSize)}
+
+⏰ <b>Submitted:</b> ${new Date().toLocaleString("ru-RU")}`;
 
 	await sendTelegramMessage(message);
 }

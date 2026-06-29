@@ -20,11 +20,17 @@ export const homeworkUploadSchema = z.object({
 		.min(3, "Full name must be at least 3 characters")
 		.max(100, "Full name must be at most 100 characters")
 		.transform((val) => val.trim()),
-	group: z
+	homework: z
 		.string()
 		.min(1, "Homework is required")
 		.min(2, "Homework must be at least 2 characters")
 		.max(100, "Homework must be at most 100 characters")
+		.transform((val) => val.trim()),
+	group: z
+		.string()
+		.min(1, "Group is required")
+		.min(2, "Group must be at least 2 characters")
+		.max(50, "Group must be at most 50 characters")
 		.transform((val) => val.trim()),
 	projectLink: projectLinkSchema,
 	file: z
@@ -52,11 +58,17 @@ export const serverHomeworkUploadSchema = z.object({
 		.min(3, "Full name must be at least 3 characters")
 		.max(100, "Full name must be at most 100 characters")
 		.trim(),
-	group: z
+	homework: z
 		.string()
 		.min(1, "Homework is required")
 		.min(2, "Homework must be at least 2 characters")
 		.max(100, "Homework must be at most 100 characters")
+		.trim(),
+	group: z
+		.string()
+		.min(1, "Group is required")
+		.min(2, "Group must be at least 2 characters")
+		.max(50, "Group must be at most 50 characters")
 		.trim(),
 	projectLink: projectLinkSchema,
 	file: z

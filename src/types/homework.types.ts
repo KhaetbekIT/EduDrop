@@ -4,7 +4,9 @@ export interface HomeworkUploadResponse {
 	data?: {
 		id: string;
 		fullName: string;
+		homework: string;
 		group: string;
+		projectLink?: string;
 		fileName: string;
 		fileSize: number;
 		uploadedAt: string;
@@ -31,6 +33,7 @@ export interface TelegramDocumentPayload {
 
 export interface FileUploadRequest {
 	fullName: string;
+	homework: string;
 	group: string;
 	projectLink?: string;
 	file: File;

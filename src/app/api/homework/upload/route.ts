@@ -10,20 +10,21 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 		const formData = await request.formData();
 
 		const fullName = formData.get("fullName");
+		const homework = formData.get("homework");
 		const group = formData.get("group");
 		const projectLink = formData.get("projectLink");
 		const file = formData.get("file");
 		const projectLinkValue = typeof projectLink === "string" ? projectLink : undefined;
 
 		// Validate required fields
-		if (typeof fullName !== "string" || typeof group !== "string" || !(file instanceof File)) {
+		if (typeof fullName !== "string" || typeof homework !== "string" || typeof group !== "string" || !(file instanceof File)) {
 			return NextResponse.json(
 				{
 					success: false,
 					message: "Missing required fields",
 					error: {
 						code: "INVALID_REQUEST",
-						details: "fullName, group, and file are required",
+						details: "fullName, homework, group, and file are required",
 					},
 				},
 				{ status: 400 }
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 		// Validate using schema
 		const validationResult = await serverHomeworkUploadSchema.safeParseAsync({
 			fullName,
+			homework,
 			group,
 			projectLink: projectLinkValue,
 			file,
@@ -56,7 +58,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 			);
 		}
 
-		const { fullName: validatedName, group: validatedGroup, file: validatedFile } = validationResult.data;
+		const {
+			fullName: validatedName,
+			homework: validatedHomework,
+			group: validatedGroup,
+			projectLink: validatedProjectLink,
+			file: validatedFile,
+		} = validationResult.data;
 
 		const uploadId = generateUploadId();
 		const originalFileName = validatedFile.name;
@@ -66,7 +74,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 		try {
 			await sendHomeworkNotification(
 				validatedName,
+				validatedHomework,
 				validatedGroup,
+				validatedProjectLink,
 				originalFileName,
 				fileSize
 			);
@@ -95,7 +105,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 				data: {
 					id: uploadId,
 					fullName: validatedName,
+					homework: validatedHomework,
 					group: validatedGroup,
+					projectLink: validatedProjectLink,
 					fileName: originalFileName,
 					fileSize,
 					uploadedAt: new Date().toISOString(),

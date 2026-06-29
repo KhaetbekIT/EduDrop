@@ -8,6 +8,7 @@ import { homeworkUploadSchema, type HomeworkUploadFormData } from "$/schemas/hom
 import { formatFileSize } from "$/utils/file";
 import type { HomeworkUploadResponse } from "$/types/homework.types";
 import { HOMEWORK_OPTIONS } from "$/mocks/homeworks.mock";
+import { GROUP_OPTIONS } from "$/mocks/groups.mock";
 import { LanguageSwitcher } from "./language-switcher";
 
 export const HomeworkUploadForm = () => {
@@ -31,6 +32,7 @@ export const HomeworkUploadForm = () => {
 		resolver: zodResolver(homeworkUploadSchema),
 		defaultValues: {
 			fullName: "",
+			homework: "",
 			group: "",
 			projectLink: "",
 			file: undefined,
@@ -126,6 +128,7 @@ export const HomeworkUploadForm = () => {
 
 				const formData = new FormData();
 				formData.append("fullName", data.fullName);
+				formData.append("homework", data.homework);
 				formData.append("group", data.group);
 				if (data.projectLink) {
 					formData.append("projectLink", data.projectLink);
@@ -208,6 +211,31 @@ export const HomeworkUploadForm = () => {
 
 					{/* Homework Field */}
 					<div className="mb-6">
+						<label htmlFor="homework" className="block text-sm font-semibold text-slate-700 mb-2">
+							{t("homework")} <span className="text-red-500">*</span>
+						</label>
+						<select
+							{...register("homework")}
+							id="homework"
+							className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-slate-400 text-slate-900"
+							aria-describedby={errors.homework ? "homework-error" : undefined}
+						>
+							<option value="">{t("selectHomework")}</option>
+							{HOMEWORK_OPTIONS.map((homework) => (
+								<option key={homework.id} value={homework.title}>
+									{homework.title}
+								</option>
+							))}
+						</select>
+						{errors.homework && (
+							<p id="homework-error" className="mt-2 text-sm text-red-500">
+								{errors.homework.message}
+							</p>
+						)}
+					</div>
+
+					{/* Group Field */}
+					<div className="mb-6">
 						<label htmlFor="group" className="block text-sm font-semibold text-slate-700 mb-2">
 							{t("group")} <span className="text-red-500">*</span>
 						</label>
@@ -217,10 +245,10 @@ export const HomeworkUploadForm = () => {
 							className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-slate-400 text-slate-900"
 							aria-describedby={errors.group ? "group-error" : undefined}
 						>
-							<option value="">{t("groupPlaceholder")}</option>
-							{HOMEWORK_OPTIONS.map((homework) => (
-								<option key={homework.id} value={homework.title}>
-									{homework.title}
+							<option value="">{t("selectGroup")}</option>
+							{GROUP_OPTIONS.map((group) => (
+								<option key={group.id} value={group.name}>
+									{group.name}
 								</option>
 							))}
 						</select>
@@ -234,13 +262,13 @@ export const HomeworkUploadForm = () => {
 					{/* Project Link Field */}
 					<div className="mb-6">
 						<label htmlFor="projectLink" className="block text-sm font-semibold text-slate-700 mb-2">
-							{t("projectLink")}
+							{t("repositoryLink")} <span className="text-slate-500">({t("optional")})</span>
 						</label>
 						<input
 							{...register("projectLink")}
 							type="url"
 							id="projectLink"
-							placeholder={t("projectLinkPlaceholder")}
+							placeholder={t("repositoryLinkPlaceholder")}
 							className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-slate-400 text-slate-900"
 							aria-describedby={errors.projectLink ? "projectLink-error" : undefined}
 						/>
