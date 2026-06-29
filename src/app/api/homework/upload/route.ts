@@ -11,7 +11,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 
 		const fullName = formData.get("fullName");
 		const group = formData.get("group");
+		const projectLink = formData.get("projectLink");
 		const file = formData.get("file");
+		const projectLinkValue = typeof projectLink === "string" ? projectLink : undefined;
 
 		// Validate required fields
 		if (typeof fullName !== "string" || typeof group !== "string" || !(file instanceof File)) {
@@ -32,6 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 		const validationResult = await serverHomeworkUploadSchema.safeParseAsync({
 			fullName,
 			group,
+			projectLink: projectLinkValue,
 			file,
 		});
 

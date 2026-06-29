@@ -32,5 +32,6 @@ export interface TelegramDocumentPayload {
 export interface FileUploadRequest {
 	fullName: string;
 	group: string;
+	projectLink?: string;
 	file: File;
 }

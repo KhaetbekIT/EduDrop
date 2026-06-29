@@ -4,6 +4,15 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 const ALLOWED_FILE_TYPES = ["application/zip", "application/x-rar-compressed", "application/x-7z-compressed"];
 const ALLOWED_EXTENSIONS = [".zip", ".rar", ".7z"];
 
+const projectLinkSchema = z
+	.string()
+	.trim()
+	.optional()
+	.refine(
+		(value) => !value || URL.canParse(value),
+		"Project link must be a valid URL"
+	);
+
 export const homeworkUploadSchema = z.object({
 	fullName: z
 		.string()
@@ -13,10 +22,11 @@ export const homeworkUploadSchema = z.object({
 		.transform((val) => val.trim()),
 	group: z
 		.string()
-		.min(1, "Group is required")
-		.min(2, "Group must be at least 2 characters")
-		.max(30, "Group must be at most 30 characters")
+		.min(1, "Homework is required")
+		.min(2, "Homework must be at least 2 characters")
+		.max(100, "Homework must be at most 100 characters")
 		.transform((val) => val.trim()),
+	projectLink: projectLinkSchema,
 	file: z
 		.instanceof(File)
 		.refine((file) => file.size > 0, "File is required")
@@ -44,10 +54,11 @@ export const serverHomeworkUploadSchema = z.object({
 		.trim(),
 	group: z
 		.string()
-		.min(1, "Group is required")
-		.min(2, "Group must be at least 2 characters")
-		.max(30, "Group must be at most 30 characters")
+		.min(1, "Homework is required")
+		.min(2, "Homework must be at least 2 characters")
+		.max(100, "Homework must be at most 100 characters")
 		.trim(),
+	projectLink: projectLinkSchema,
 	file: z
 		.instanceof(File)
 		.refine((file) => file.size > 0, "File is required")

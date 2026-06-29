@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { homeworkUploadSchema, type HomeworkUploadFormData } from "$/schemas/homework.schema";
 import { formatFileSize } from "$/utils/file";
 import type { HomeworkUploadResponse } from "$/types/homework.types";
+import { HOMEWORK_OPTIONS } from "$/mocks/homeworks.mock";
 import { LanguageSwitcher } from "./language-switcher";
 
 export const HomeworkUploadForm = () => {
@@ -31,6 +32,7 @@ export const HomeworkUploadForm = () => {
 		defaultValues: {
 			fullName: "",
 			group: "",
+			projectLink: "",
 			file: undefined,
 		},
 	});
@@ -125,6 +127,9 @@ export const HomeworkUploadForm = () => {
 				const formData = new FormData();
 				formData.append("fullName", data.fullName);
 				formData.append("group", data.group);
+				if (data.projectLink) {
+					formData.append("projectLink", data.projectLink);
+				}
 				formData.append("file", data.file, data.file.name);
 
 				const response = await fetch("/api/homework/upload", {
@@ -201,22 +206,47 @@ export const HomeworkUploadForm = () => {
 						)}
 					</div>
 
-					{/* Group Field */}
+					{/* Homework Field */}
 					<div className="mb-6">
 						<label htmlFor="group" className="block text-sm font-semibold text-slate-700 mb-2">
 							{t("group")} <span className="text-red-500">*</span>
 						</label>
-						<input
+						<select
 							{...register("group")}
-							type="text"
 							id="group"
-							placeholder={t("groupPlaceholder")}
 							className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-slate-400 text-slate-900"
 							aria-describedby={errors.group ? "group-error" : undefined}
-						/>
+						>
+							<option value="">{t("groupPlaceholder")}</option>
+							{HOMEWORK_OPTIONS.map((homework) => (
+								<option key={homework.id} value={homework.title}>
+									{homework.title}
+								</option>
+							))}
+						</select>
 						{errors.group && (
 							<p id="group-error" className="mt-2 text-sm text-red-500">
 								{errors.group.message}
+							</p>
+						)}
+					</div>
+
+					{/* Project Link Field */}
+					<div className="mb-6">
+						<label htmlFor="projectLink" className="block text-sm font-semibold text-slate-700 mb-2">
+							{t("projectLink")}
+						</label>
+						<input
+							{...register("projectLink")}
+							type="url"
+							id="projectLink"
+							placeholder={t("projectLinkPlaceholder")}
+							className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-slate-400 text-slate-900"
+							aria-describedby={errors.projectLink ? "projectLink-error" : undefined}
+						/>
+						{errors.projectLink && (
+							<p id="projectLink-error" className="mt-2 text-sm text-red-500">
+								{errors.projectLink.message}
 							</p>
 						)}
 					</div>
