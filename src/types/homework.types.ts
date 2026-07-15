@@ -7,8 +7,8 @@ export interface HomeworkUploadResponse {
 		homework: string;
 		group: string;
 		projectLink?: string;
-		fileName: string;
-		fileSize: number;
+		fileName?: string;
+		fileSize?: number;
 		uploadedAt: string;
 	};
 	error?: {
@@ -36,5 +36,5 @@ export interface FileUploadRequest {
 	homework: string;
 	group: string;
 	projectLink?: string;
-	file: File;
+	file?: File;
 }

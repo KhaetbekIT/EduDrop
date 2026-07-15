@@ -72,7 +72,7 @@ export const HomeworkUploadForm = () => {
 
 	const handleSetFile = useCallback((file: File | null) => {
 		if (!file) {
-			setValue("file", undefined as unknown as File, {
+			setValue("file", undefined, {
 				shouldValidate: true,
 				shouldDirty: true,
 			});
@@ -133,7 +133,9 @@ export const HomeworkUploadForm = () => {
 				if (data.projectLink) {
 					formData.append("projectLink", data.projectLink);
 				}
-				formData.append("file", data.file, data.file.name);
+				if (data.file) {
+					formData.append("file", data.file, data.file.name);
+				}
 
 				const response = await fetch("/api/homework/upload", {
 					method: "POST",
@@ -282,7 +284,7 @@ export const HomeworkUploadForm = () => {
 					{/* File Upload Area */}
 					<div className="mb-6">
 						<label htmlFor="file" className="block text-sm font-semibold text-slate-700 mb-3">
-							{t("file")} <span className="text-red-500">*</span>
+							{t("file")} <span className="text-slate-500">({t("optional")})</span>
 						</label>
 
 						<div

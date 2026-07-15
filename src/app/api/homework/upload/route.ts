@@ -15,16 +15,17 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 		const projectLink = formData.get("projectLink");
 		const file = formData.get("file");
 		const projectLinkValue = typeof projectLink === "string" ? projectLink : undefined;
+		const fileValue = file instanceof File && file.size > 0 ? file : undefined;
 
 		// Validate required fields
-		if (typeof fullName !== "string" || typeof homework !== "string" || typeof group !== "string" || !(file instanceof File)) {
+		if (typeof fullName !== "string" || typeof homework !== "string" || typeof group !== "string") {
 			return NextResponse.json(
 				{
 					success: false,
 					message: "Missing required fields",
 					error: {
 						code: "INVALID_REQUEST",
-						details: "fullName, homework, group, and file are required",
+						details: "fullName, homework, and group are required",
 					},
 				},
 				{ status: 400 }
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 			homework,
 			group,
 			projectLink: projectLinkValue,
-			file,
+			file: fileValue,
 		});
 
 		if (!validationResult.success) {
@@ -67,8 +68,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 		} = validationResult.data;
 
 		const uploadId = generateUploadId();
-		const originalFileName = validatedFile.name;
-		const fileSize = validatedFile.size;
+		const originalFileName = validatedFile?.name;
+		const fileSize = validatedFile?.size;
 
 		// Send notification and file to Telegram
 		try {
@@ -80,7 +81,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<HomeworkU
 				originalFileName,
 				fileSize
 			);
-			await sendTelegramDocument(validatedFile, originalFileName);
+			if (validatedFile && originalFileName) {
+				await sendTelegramDocument(validatedFile, originalFileName);
+			}
 		} catch (telegramError) {
 			const errorMessage = telegramError instanceof Error ? telegramError.message : "Failed to send to Telegram";
 			console.error("Telegram error:", errorMessage);

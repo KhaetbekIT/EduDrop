@@ -30,7 +30,9 @@ export function HomeworkUploadForm() {
 		resolver: zodResolver(homeworkUploadSchema),
 		defaultValues: {
 			fullName: "",
+			homework: "",
 			group: "",
+			projectLink: "",
 			file: undefined,
 		},
 	});
@@ -96,6 +98,10 @@ export function HomeworkUploadForm() {
 
 	const handleRemoveFile = () => {
 		setSelectedFile(null);
+		setValue("file", undefined, {
+			shouldValidate: true,
+			shouldDirty: true,
+		});
 		if (fileInputRef.current) {
 			fileInputRef.current.value = "";
 		}
@@ -113,8 +119,14 @@ export function HomeworkUploadForm() {
 
 			const formData = new FormData();
 			formData.append("fullName", data.fullName);
+			formData.append("homework", data.homework);
 			formData.append("group", data.group);
-			formData.append("file", data.file);
+			if (data.projectLink) {
+				formData.append("projectLink", data.projectLink);
+			}
+			if (data.file) {
+				formData.append("file", data.file, data.file.name);
+			}
 
 			const response = await fetch("/api/homework/upload", {
 				method: "POST",
@@ -212,7 +224,7 @@ export function HomeworkUploadForm() {
 					{/* File Upload Area */}
 					<div className="mb-6">
 						<label htmlFor="file" className="block text-sm font-semibold text-slate-700 mb-3">
-							{t("file")} <span className="text-red-500">*</span>
+							{t("file")} <span className="text-slate-500">({t("optional")})</span>
 						</label>
 
 						{!selectedFile ? (

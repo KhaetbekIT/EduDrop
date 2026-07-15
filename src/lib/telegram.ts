@@ -127,8 +127,8 @@ export async function sendHomeworkNotification(
 	homework: string,
 	group: string,
 	projectLink: string | undefined,
-	fileName: string,
-	fileSize: number
+	fileName?: string,
+	fileSize?: number
 ): Promise<void> {
 	const message = `📚 <b>Homework Submission</b>
 
@@ -140,9 +140,9 @@ export async function sendHomeworkNotification(
 
 🔗 <b>Repository:</b> ${escapeHtml(projectLink || "Not specified")}
 
-📦 <b>Archive:</b> ${escapeHtml(fileName)}
+📦 <b>Archive:</b> ${escapeHtml(fileName || "Not attached")}
 
-💾 <b>Size:</b> ${formatFileSize(fileSize)}
+💾 <b>Size:</b> ${fileName ? formatFileSize(fileSize ?? 0) : "Not attached"}
 
 ⏰ <b>Submitted:</b> ${new Date().toLocaleString("ru-RU")}`;
 
