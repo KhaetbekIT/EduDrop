@@ -32,4 +32,16 @@ export const HOMEWORK_OPTIONS: HomeworkOption[] = [
 		id: 7,
 		title: "Homework #7 - Flex (Практика с макетом)",
 	},
+	{
+		id: 8,
+		title: "Homework #8 - Sanctum (Практика с макетом)",
+	},
+	{
+		id: 9,
+		title: "Homework #9 - Burger (Практика с макетом)",
+	},
+	{
+		id: 10,
+		title: "Homework #10 - Sanctum - 2 (Практика с макетом)",
+	},
 ];
